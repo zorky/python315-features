@@ -5,12 +5,16 @@ Tests des nouveautés de **Python 3.15** : unpacking dans les comprehensions, im
 ## Initialisation (uv)
 
 Prérequis : [uv](https://docs.astral.sh/uv/) installé.\
-Pour installer uv : `curl -LsSf https://astral.sh/uv/install.sh | sh`
+Installer uv : `curl -LsSf https://astral.sh/uv/install.sh | sh`
 
 ```bash
-# Créer le projet (déjà fait ici)
+# Créer le projet si non déjà fait
 uv init python_15 --python 3.15
-cd pythonè15
+cd python_15
+
+# ou git pull
+git pull git@github.com:zorky/python315-features.git python_p15
+cd python_15
 
 # Créer le venv et installer les dépendances
 uv sync
