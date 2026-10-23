@@ -1,6 +1,6 @@
 # Python 15
 
-Tests des nouveautés de **Python 3.15** : unpacking dans les comprehensions, imports lazy explicites et `frozendict`.
+Tests des nouveautés de **Python 3.15** : unpacking dans les comprehensions, imports lazy explicites, `frozendict` et `sentinel`.
 
 ## Initialisation (uv)
 
@@ -88,6 +88,43 @@ python frozendict.py
 
 Note : `immutable_dict()` contient volontairement l'assignation `config["port"] = 1` qui lève `TypeError`. Commente-la pour voir la suite s'exécuter.
 
+### 4. `sentinel` — [sentinel.py](sentinel.py)
+
+Builtin `sentinel("NOM")` : valeur unique pour distinguer « non fourni » de `None` (valeur valide). Remplace l'idiome `MISSING = object()`, avec un `repr` lisible, une identité conservée par `copy` / `pickle`, et utilisable dans les annotations (`str | None | MISSING`).
+
+Cas typique : un `PATCH` où clé absente = ne rien changer, `null` = effacer.
+
+```python
+MISSING = sentinel("MISSING")
+
+def update_user_new(user: User, email: str | None | MISSING = MISSING) -> None:
+    if email is not MISSING:
+        user.email = email
+```
+
+Le script est autonome (PEP 723), il se lance avec `uv run` :
+
+```bash
+uv run sentinel.py
+```
+
+| Payload PATCH | Sans sentinel (`None` par défaut) | Avec sentinel |
+|---|---|---|
+| `{}` | inchangé | inchangé |
+| `{"email": None}` | inchangé (**effacement impossible**) | `None` (effacé) |
+| `{"email": "new@example.com"}` | `new@example.com` | `new@example.com` |
+
+Sortie attendue (extrait) :
+
+```
+object()  : <object object at 0x...>
+sentinel  : MISSING
+copy      : True
+deepcopy  : True
+pickle    : True
+annotation: str | None | MISSING
+```
+
 ## Structure
 
 ```
@@ -96,5 +133,6 @@ Note : `immutable_dict()` contient volontairement l'assignation `config["port"] 
 ├── .python-version    # 3.15
 ├── unpack.py          # unpacking dans comprehensions
 ├── lazy_import.py     # imports lazy explicites
-└── frozendict.py      # dict immuable
+├── frozendict.py      # dict immuable
+└── sentinel.py        # sentinel : absent vs None
 ```
